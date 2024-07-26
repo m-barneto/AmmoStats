@@ -17,12 +17,13 @@ class AmmoStats implements IPostDBLoadMod {
     private itemDatabase: Record<string, ITemplateItem>;
     private handbookDatabase: IHandbookBase;
     private localeDatabase: Record<string, string>;
+    private logger: ILogger;
 
     public postDBLoad(container: DependencyContainer): void {
         const vfs = container.resolve<VFS>("VFS");
         this.modConfig = jsonc.parse(vfs.readFile(path.resolve(__dirname, "../config/config.jsonc")));
 
-        const logger = container.resolve<ILogger>("WinstonLogger");
+        this.logger = container.resolve<ILogger>("WinstonLogger");
         const databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
         const localeService = container.resolve<LocaleService>("LocaleService");
 
@@ -37,7 +38,7 @@ class AmmoStats implements IPostDBLoadMod {
             if (handbookItem == undefined) continue;
 
             if (item._parent == "5485a8684bdc2da71d8b4567") {
-                if (!("ammoType" in item._props) || item._props.ammoType != "bullet" && item._props.ammoType != "grenade") {
+                if (!("ammoType" in item._props) || item._props.ammoType != "bullet" && item._props.ammoType != "buckshot" && item._props.ammoType != "grenade") {
                     continue;
                 }
                 this.addInfoToName(item, item);
@@ -54,18 +55,18 @@ class AmmoStats implements IPostDBLoadMod {
 
                 // Get first slot
                 if (stackSlots[0]._parent != item._id) {
-                    logger.error(`Problem handling ammo box with ID ${item._id}`);
+                    this.logger.error(`Problem handling ammo box with ID ${item._id}`);
                     continue;
                 }
 
                 if (!("filters" in stackSlots[0]._props)) {
-                    logger.error(`Problem with filters in ammo box with ID ${item._id}`);
+                    this.logger.error(`Problem with filters in ammo box with ID ${item._id}`);
                     continue;
                 }
 
                 const filters = stackSlots[0]._props.filters;
                 if (filters.length != 1) {
-                    logger.error(`Problem with filters length in ammo box with ID ${item._id}`);
+                    this.logger.error(`Problem with filters length in ammo box with ID ${item._id}`);
                 }
 
                 const filter = filters[0].Filter[0];
@@ -88,7 +89,7 @@ class AmmoStats implements IPostDBLoadMod {
         if (!hasPenProp || !hasDamageProp) return;
 
         let damageMult = 1;
-        if (bullet._props.ammoType === "buckshot") {
+        if (bullet._props.ammoType == "buckshot") {
             damageMult = bullet._props.buckshotBullets;
         }
 
