@@ -93,14 +93,17 @@ class AmmoStats implements IPostDBLoadMod {
             damageMult = bullet._props.buckshotBullets;
         }
 
+        const damage = String(bullet._props.Damage * damageMult).padStart(this.modConfig.PaddingLength, "0");
+        const pen = String(bullet._props.PenetrationPower).padStart(this.modConfig.PaddingLength, "0");
+
         let bulletInfo;
         if (this.modConfig.InfoInParenthesis) {
             bulletInfo = "(";
         }
         if (this.modConfig.ShowPenBeforeDmg) {
-            bulletInfo += `${bullet._props.PenetrationPower}/${bullet._props.Damage * damageMult}`;
+            bulletInfo += `${pen}/${damage}`;
         } else {
-            bulletInfo += `${bullet._props.Damage * damageMult}/${bullet._props.PenetrationPower}`;
+            bulletInfo += `${damage}/${pen}`;
         }
         if (this.modConfig.InfoInParenthesis) {
             bulletInfo += ")";

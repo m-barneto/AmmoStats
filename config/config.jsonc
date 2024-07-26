@@ -1,5 +1,12 @@
 {
+    // (pen/dmg) | (dmg/pen)
     "ShowPenBeforeDmg": true,
+    // (pen/dmg) Ignolik blah blah blah
+    // Ignolik blah blah blah (pen/dmg)
     "InfoBeforeName": true,
-    "InfoInParenthesis": true
+    // (pen/dmg) | pen/dmg
+    "InfoInParenthesis": true,
+    // Set this to 0 to disable damage/pen value zero padding. 
+    // You get better sorting if you pad them :)
+    "PaddingLength": 2
 }
