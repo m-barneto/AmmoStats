@@ -16,8 +16,16 @@ class AmmoStats implements IPostDBLoadMod {
     private modConfig;
     private itemDatabase: Record<string, ITemplateItem>;
     private handbookDatabase: IHandbookBase;
-    private localeDatabase: Record<string, string>;
+    private localeService: LocaleService;
+    private locales: Record<string, Record<string, string>>;
     private logger: ILogger;
+
+    private modifyLocale(key: string, value: string, before: boolean) {
+        for (const i in this.locales) {
+            this.locales[i][key] = before ? `${value} ${this.locales[i][key]}` : `${this.locales[i][key]} ${value}`;
+            this.logger.info(this.locales[i][key]);
+        }
+    }
 
     public postDBLoad(container: DependencyContainer): void {
         const vfs = container.resolve<VFS>("VFS");
@@ -25,11 +33,11 @@ class AmmoStats implements IPostDBLoadMod {
 
         this.logger = container.resolve<ILogger>("WinstonLogger");
         const databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
-        const localeService = container.resolve<LocaleService>("LocaleService");
+        //this.localeService = container.resolve<LocaleService>("LocaleService");
+        this.locales = databaseServer.getTables().locales.global;
 
         this.itemDatabase = databaseServer.getTables().templates.items;
         this.handbookDatabase = databaseServer.getTables().templates.handbook;
-        this.localeDatabase = localeService.getLocaleDb();
 
         for (const itemId in this.itemDatabase) {
             const item = this.itemDatabase[itemId];
@@ -109,12 +117,7 @@ class AmmoStats implements IPostDBLoadMod {
             bulletInfo += ")";
         }
 
-        const itemLocaleName = this.localeDatabase[itemName];
-        if (this.modConfig.InfoBeforeName) {
-            this.localeDatabase[itemName] = bulletInfo + " " + itemLocaleName;
-        } else {
-            this.localeDatabase[itemName] = itemLocaleName + " " + bulletInfo;
-        }
+        this.modifyLocale(itemName, bulletInfo, this.modConfig.InfoBeforeName);
     }
 }
 
