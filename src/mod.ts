@@ -23,7 +23,6 @@ class AmmoStats implements IPostDBLoadMod {
     private modifyLocale(key: string, value: string, before: boolean) {
         for (const i in this.locales) {
             this.locales[i][key] = before ? `${value} ${this.locales[i][key]}` : `${this.locales[i][key]} ${value}`;
-            this.logger.info(this.locales[i][key]);
         }
     }
 
