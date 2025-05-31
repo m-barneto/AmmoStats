@@ -2,12 +2,11 @@ import { DependencyContainer } from "tsyringe";
 
 import { jsonc } from "jsonc";
 import path from "path";
-import { QuestRewardType } from "@spt/models/enums/QuestRewardType";
 import { IPostDBLoadMod } from "@spt/models/external/IPostDBLoadMod";
 import { ILogger } from "@spt/models/spt/utils/ILogger";
 import { DatabaseServer } from "@spt/servers/DatabaseServer";
-import { VFS } from "@spt/utils/VFS";
-import { ITemplateItem, ItemType, SlotFilter, StackSlot } from "@spt/models/eft/common/tables/ITemplateItem";
+import { FileSystemSync } from "@spt/utils/FileSystemSync";
+import { IStackSlot, ITemplateItem, ItemType} from "@spt/models/eft/common/tables/ITemplateItem";
 import { LocaleService } from "@spt/services/LocaleService";
 import { IHandbookBase } from "@spt/models/eft/common/tables/IHandbookBase";
 
@@ -27,12 +26,11 @@ class AmmoStats implements IPostDBLoadMod {
     }
 
     public postDBLoad(container: DependencyContainer): void {
-        const vfs = container.resolve<VFS>("VFS");
-        this.modConfig = jsonc.parse(vfs.readFile(path.resolve(__dirname, "../config/config.jsonc")));
+        const fileSystem = container.resolve<FileSystemSync>("FileSystemSync");
+        this.modConfig = jsonc.parse(fileSystem.read(path.resolve(__dirname, "../config/config.jsonc")));
 
         this.logger = container.resolve<ILogger>("WinstonLogger");
         const databaseServer = container.resolve<DatabaseServer>("DatabaseServer");
-        //this.localeService = container.resolve<LocaleService>("LocaleService");
         this.locales = databaseServer.getTables().locales.global;
 
         this.itemDatabase = databaseServer.getTables().templates.items;
@@ -55,7 +53,7 @@ class AmmoStats implements IPostDBLoadMod {
                     continue;
                 }
 
-                const stackSlots = item._props.StackSlots as StackSlot[];
+                const stackSlots = item._props.StackSlots as IStackSlot[];
                 if (stackSlots.length != 1) {
                     continue;
                 }
