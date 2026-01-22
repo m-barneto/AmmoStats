@@ -1,0 +1,18 @@
+{
+    // (pen/dmg) or (dmg/pen)
+    // I like pen/dmg for sorting in the flea
+    "ShowPenBeforeDmg": true,
+
+
+    // (pen/dmg) Ignolik
+    // or
+    // Ignolik (pen/dmg)
+    "InfoBeforeName": true,
+
+    // (pen/dmg) | pen/dmg
+    "InfoInParenthesis": true,
+
+    // Set this to 0 to disable damage/pen value zero padding. 
+    // You get better sorting if you pad them :)
+    "PaddingLength": 2
+}
