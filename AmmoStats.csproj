@@ -21,9 +21,16 @@
     <PropertyGroup>
         <DistDir>dist</DistDir>
         <DirToZip>$(DistDir)\$(AssemblyName)</DirToZip>
+		<TarkovDir Condition=" '$(TarkovDir)' == '' ">D:\Games\SPT 4.0.11</TarkovDir>
+		<ModOutputDir>$(TarkovDir)\SPT\user\mods\$(AssemblyName)</ModOutputDir>
         <Version>1.3.0</Version>
     </PropertyGroup>
     <Target Name="Zip" AfterTargets="AfterBuild">
+		<RemoveDir Directories="$(ModOutputDir)" />
+		<MakeDir Directories="$(ModOutputDir)"/>
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ModOutputDir)" />
+		<Copy SourceFiles="$(OutputPath)\config.json" DestinationFolder="$(ModOutputDir)" />
+		
         <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DirToZip)\SPT\user\mods\$(AssemblyName)" />
         <Copy SourceFiles="$(OutputPath)\config.json" DestinationFolder="$(DirToZip)\SPT\user\mods\$(AssemblyName)" />
         <ZipDirectory SourceDirectory="$(DirToZip)" DestinationFile="$(DistDir)\$(MSBuildProjectName)-$(Version).zip" Overwrite="true" />

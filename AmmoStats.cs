@@ -27,7 +27,7 @@ public record ModMetadata : AbstractModMetadata {
 }
 
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 1)]
+[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 90000)]
 public class AmmoStats(
     DatabaseServer databaseServer,
     DatabaseService databaseService,
@@ -106,8 +106,8 @@ public class AmmoStats(
         if (bullet == null) bullet = item;
         if (bullet.Name == null) return;
         string name = bullet.Name.ToLower();
+        if (name.Contains("patron_rsp") || name.Contains("patron_26x75")) return;
 
-        if (name.Contains("shrapnel") || name.Contains("patron_rsp") || name.Contains("patron_26x75")) return;
 
         string localeIndex = item.Id + " Name";
         double damageMultiplier = 1.0;
