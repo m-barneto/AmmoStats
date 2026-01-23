@@ -5,6 +5,7 @@ using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
+using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Spt.Mod;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
@@ -33,6 +34,7 @@ public class AmmoStats(
     DatabaseService databaseService,
     LocaleService localeService,
     ModHelper modHelper,
+    ConfigServer configServer,
     ISptLogger<AmmoStats> logger)
     : IOnLoad {
 
@@ -41,7 +43,6 @@ public class AmmoStats(
     Dictionary<string, string>? locales;
     Dictionary<string, string>? bulletNames;
     ModConfig? config;
-
 
     public Task OnLoad() {
         var pathToMod = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
@@ -89,7 +90,7 @@ public class AmmoStats(
         }
 
         // Load our changes into the english locales
-        if (databaseService.GetLocales().Global.TryGetValue("en", out var lazyloadedValue)) {
+        if (databaseService.GetLocales().Global.TryGetValue(configServer.GetConfig<LocaleConfig>().GameLocale, out var lazyloadedValue)) {
             lazyloadedValue.AddTransformer(lazyloadedLocaleData => {
                 bulletNames.ToList().ForEach(x => lazyloadedLocaleData![x.Key] = x.Value);
 
